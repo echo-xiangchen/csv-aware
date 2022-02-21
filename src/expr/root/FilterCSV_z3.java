@@ -51,9 +51,6 @@ public class FilterCSV_z3 {
 				final Antlr2Expr antlr2Expr = new Antlr2Expr();
 				final Z3builder z3Builder = new Z3builder();
 				
-				// create z3 context
-				Context ctx = new Context();
-				
 			      
 			    //Read CSV line by line and use the string array as you want
 			    String[] nextLine;			    
@@ -117,14 +114,12 @@ public class FilterCSV_z3 {
 			    			
 			    			PCpath = z3Builder.ctx.mkAnd(PCpath, pcMap.get(splitPC[i].split(",")[0]));
 			    			
-			    			Solver s = ctx.mkSolver();
+			    			Solver s = z3Builder.ctx.mkSolver();
 			    			s.add(PCpath);
 			    			if (s.check() == Status.UNSATISFIABLE) {
 			    				writeToFile = false;
 			    				break;
 			    			}
-			    			
-			    			
 			    		}
 			    		
 			    		if (writeToFile) {
