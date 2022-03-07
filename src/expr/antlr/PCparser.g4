@@ -1,20 +1,20 @@
 grammar PCparser;
 
-@header {
-	package antlr;
-}
+//@header {
+//	package antlr;
+//}
 
 stat : boolExpr* ;
 
 boolExpr 
-	: NOT boolExpr									# Not
+	: '(' boolExpr ')'								# Paren
+	| NOT boolExpr									# Not
 	| boolExpr AND boolExpr							# And
 	| boolExpr OR boolExpr							# Or
 //	| boolExpr IFF boolExpr							# Iff
-	| ID 											# BoolVar
 	| TRUE 											# BoolTrue
 	| FALSE 										# BoolFalse
-	| '(' boolExpr ')'								# Paren
+	| ID 											# BoolVar
 //	| relationalExpr								# Relate 
 	;
 
@@ -39,15 +39,21 @@ boolExpr
 //	;
 
 
-
 // boolean constant keywords
 TRUE : 'true' | 'TRUE' | 'True';
 FALSE : 'false' | 'FALSE' | 'False';
 
 // logical expr keywords
-NOT : '!' | 'not';
-AND : '&&' | 'and' | '/\\';
-OR : '||' | 'or' | '\\/';
+NOT : '!';
+AND : '&&' | '/\\';
+OR : '||' | '\\/';
+
+// specify ID
+ID : ( [a-zA-Z0-9_]+ | '()' )+;
+
+//NOT : '!' | 'not';
+//AND : '&&' | 'and' | '/\\';
+//OR : '||' | 'or' | '\\/';
 // IMPLIES : '=>';
 // IFF : '<=>';
 
@@ -65,10 +71,8 @@ OR : '||' | 'or' | '\\/';
 // SUB : '-';
 
 // ignore the comments and whitespace
-COMMENT : '--' ~[\r\n]* -> skip;
+//COMMENT : '--' ~[\r\n]* -> skip;
 WS  :   [ \t\n]+ -> skip ;
-
-ID : [a-zA-Z0-9_]+;
 
 // number lexer rules
 // INTNUM : '0'|'-'?[1-9][0-9]*;

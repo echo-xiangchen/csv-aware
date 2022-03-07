@@ -31,24 +31,22 @@ public class Antlr2Expr extends PCparserBaseVisitor<Expr>{
 		return new Disjunction(visit(ctx.boolExpr(0)), visit(ctx.boolExpr(1)));
 	}
 		
-	
+	// boolean true declaration
+		@Override
+		public Expr visitBoolTrue(BoolTrueContext ctx) {
+			return new BoolTrue(ctx.TRUE().getText());
+		}
+		
+		// boolean false declaration
+		@Override
+		public Expr visitBoolFalse(BoolFalseContext ctx) {
+			return new BoolFalse(ctx.FALSE().getText());
+		}
+		
 	// boolean variable verification
 	@Override
 	public Expr visitBoolVar(BoolVarContext ctx) {
 		return new BoolVar(ctx.ID().getText());
-	}
-	
-	
-	// boolean true declaration
-	@Override
-	public Expr visitBoolTrue(BoolTrueContext ctx) {
-		return new BoolTrue(ctx.TRUE().getText());
-	}
-	
-	// boolean false declaration
-	@Override
-	public Expr visitBoolFalse(BoolFalseContext ctx) {
-		return new BoolFalse(ctx.FALSE().getText());
 	}
 	
 	

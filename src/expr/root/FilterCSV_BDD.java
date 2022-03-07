@@ -20,11 +20,10 @@ import expr.composite.Expr;
 import expr.visitor.BDDbuilder;
 
 public class FilterCSV_BDD {
-	
-	// hashmap stores the <pc, bddAddress> Map
-	private static Map<String, Long> pcMap = new LinkedHashMap<String, Long>();
 
 	public static void main(String[] args) {
+		// hashmap stores the <pc, bddAddress> Map
+		Map<String, Long> pcMap = new LinkedHashMap<String, Long>();
 		
 		if (args.length != 1) {
 			System.out.println("Usage: "
@@ -37,7 +36,7 @@ public class FilterCSV_BDD {
 			
 			try {
 				//Get the CSVReader instance with specifying the delimiter to be used
-			    reader = new CSVReader(new FileReader(args[0]), ',', '"');
+			    reader = new CSVReader(new FileReader(args[0]));
 			    
 			    // initialize antlr2Expr and bddbuilder for parsing
 				final Antlr2Expr antlr2Expr = new Antlr2Expr();
@@ -56,10 +55,11 @@ public class FilterCSV_BDD {
 			    		
 			    		// get and split string
 			    		String currentRow = Arrays.toString(nextLine);
-			    		String[] splitPC = currentRow.split("\"pc\":");
+			    		String[] splitPC = currentRow.split("\"condition\":\"");
 			    		
 			    		// parse the first pc of current row if pcMap does not contain it
-			    		String firstPC = splitPC[1].split(",")[0];
+			    		String firstPC = splitPC[1].split("\"")[0];
+			    		//System.out.println(firstPC);
 			    		
 			    		if (!pcMap.containsKey(firstPC)) {
 			    			ANTLRInputStream input = new ANTLRInputStream(firstPC);
@@ -87,9 +87,10 @@ public class FilterCSV_BDD {
 			    			//print splitPC[i].split(",")[0]
 			    			//System.out.println(i + ": " + splitPC[i].split(",")[0]);
 			    			
+			    			String currentPC = splitPC[i].split("\"")[0];
 			    			// parse the string if pcMap does not contain it
-			    			if (!pcMap.containsKey(splitPC[i].split(",")[0])) {
-			    				ANTLRInputStream input = new ANTLRInputStream(splitPC[i].split(",")[0]);
+			    			if (!pcMap.containsKey(currentPC)) {
+			    				ANTLRInputStream input = new ANTLRInputStream(currentPC);
 			    				PCparserLexer lexer = new PCparserLexer(input);
 			    				CommonTokenStream tokens = new CommonTokenStream(lexer);
 			    				PCparserParser parser = new PCparserParser(tokens);
@@ -103,10 +104,10 @@ public class FilterCSV_BDD {
 			    		        expr.accept(bddBuilder);
 			    		        
 			    		        // store the BDD into the map
-			    		        pcMap.put(splitPC[i].split(",")[0], bddBuilder.getBDDaddress());
+			    		        pcMap.put(currentPC, bddBuilder.getBDDaddress());
 							}
 			    			
-			    			PCpath = Cudd_bddAnd(BDDbuilder.ddManager, PCpath, pcMap.get(splitPC[i].split(",")[0]));
+			    			PCpath = Cudd_bddAnd(BDDbuilder.ddManager, PCpath, pcMap.get(currentPC));
 			    			
 			    			if (PCpath == FF) {
 								writeToFile = false;

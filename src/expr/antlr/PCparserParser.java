@@ -1,7 +1,6 @@
-// Generated from PCparser.g4 by ANTLR 4.9.2
-
 package expr.antlr;
 
+// Generated from PCparser.g4 by ANTLR 4.9.2
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -19,8 +18,7 @@ public class PCparserParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, TRUE=3, FALSE=4, NOT=5, AND=6, OR=7, COMMENT=8, WS=9, 
-		ID=10;
+		T__0=1, T__1=2, TRUE=3, FALSE=4, NOT=5, AND=6, OR=7, ID=8, WS=9;
 	public static final int
 		RULE_stat = 0, RULE_boolExpr = 1;
 	private static String[] makeRuleNames() {
@@ -32,14 +30,13 @@ public class PCparserParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'('", "')'"
+			null, "'('", "')'", null, null, "'!'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, "TRUE", "FALSE", "NOT", "AND", "OR", "COMMENT", "WS", 
-			"ID"
+			null, null, null, "TRUE", "FALSE", "NOT", "AND", "OR", "ID", "WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -319,25 +316,29 @@ public class PCparserParser extends Parser {
 			setState(20);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
+			case T__0:
+				{
+				_localctx = new ParenContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+
+				setState(11);
+				match(T__0);
+				setState(12);
+				boolExpr(0);
+				setState(13);
+				match(T__1);
+				}
+				break;
 			case NOT:
 				{
 				_localctx = new NotContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-
-				setState(11);
+				setState(15);
 				match(NOT);
-				setState(12);
-				boolExpr(7);
-				}
-				break;
-			case ID:
-				{
-				_localctx = new BoolVarContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(13);
-				match(ID);
+				setState(16);
+				boolExpr(6);
 				}
 				break;
 			case TRUE:
@@ -345,7 +346,7 @@ public class PCparserParser extends Parser {
 				_localctx = new BoolTrueContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(14);
+				setState(17);
 				match(TRUE);
 				}
 				break;
@@ -354,21 +355,17 @@ public class PCparserParser extends Parser {
 				_localctx = new BoolFalseContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(15);
+				setState(18);
 				match(FALSE);
 				}
 				break;
-			case T__0:
+			case ID:
 				{
-				_localctx = new ParenContext(_localctx);
+				_localctx = new BoolVarContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(16);
-				match(T__0);
-				setState(17);
-				boolExpr(0);
-				setState(18);
-				match(T__1);
+				setState(19);
+				match(ID);
 				}
 				break;
 			default:
@@ -391,11 +388,11 @@ public class PCparserParser extends Parser {
 						_localctx = new AndContext(new BoolExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_boolExpr);
 						setState(22);
-						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
 						setState(23);
 						match(AND);
 						setState(24);
-						boolExpr(7);
+						boolExpr(6);
 						}
 						break;
 					case 2:
@@ -403,11 +400,11 @@ public class PCparserParser extends Parser {
 						_localctx = new OrContext(new BoolExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_boolExpr);
 						setState(25);
-						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
+						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
 						setState(26);
 						match(OR);
 						setState(27);
-						boolExpr(6);
+						boolExpr(5);
 						}
 						break;
 					}
@@ -440,24 +437,24 @@ public class PCparserParser extends Parser {
 	private boolean boolExpr_sempred(BoolExprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 6);
-		case 1:
 			return precpred(_ctx, 5);
+		case 1:
+			return precpred(_ctx, 4);
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\f$\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\13$\4\2\t\2\4\3\t"+
 		"\3\3\2\7\2\b\n\2\f\2\16\2\13\13\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
 		"\3\3\5\3\27\n\3\3\3\3\3\3\3\3\3\3\3\3\3\7\3\37\n\3\f\3\16\3\"\13\3\3\3"+
 		"\2\3\4\4\2\4\2\2\2(\2\t\3\2\2\2\4\26\3\2\2\2\6\b\5\4\3\2\7\6\3\2\2\2\b"+
 		"\13\3\2\2\2\t\7\3\2\2\2\t\n\3\2\2\2\n\3\3\2\2\2\13\t\3\2\2\2\f\r\b\3\1"+
-		"\2\r\16\7\7\2\2\16\27\5\4\3\t\17\27\7\f\2\2\20\27\7\5\2\2\21\27\7\6\2"+
-		"\2\22\23\7\3\2\2\23\24\5\4\3\2\24\25\7\4\2\2\25\27\3\2\2\2\26\f\3\2\2"+
-		"\2\26\17\3\2\2\2\26\20\3\2\2\2\26\21\3\2\2\2\26\22\3\2\2\2\27 \3\2\2\2"+
-		"\30\31\f\b\2\2\31\32\7\b\2\2\32\37\5\4\3\t\33\34\f\7\2\2\34\35\7\t\2\2"+
-		"\35\37\5\4\3\b\36\30\3\2\2\2\36\33\3\2\2\2\37\"\3\2\2\2 \36\3\2\2\2 !"+
+		"\2\r\16\7\3\2\2\16\17\5\4\3\2\17\20\7\4\2\2\20\27\3\2\2\2\21\22\7\7\2"+
+		"\2\22\27\5\4\3\b\23\27\7\5\2\2\24\27\7\6\2\2\25\27\7\n\2\2\26\f\3\2\2"+
+		"\2\26\21\3\2\2\2\26\23\3\2\2\2\26\24\3\2\2\2\26\25\3\2\2\2\27 \3\2\2\2"+
+		"\30\31\f\7\2\2\31\32\7\b\2\2\32\37\5\4\3\b\33\34\f\6\2\2\34\35\7\t\2\2"+
+		"\35\37\5\4\3\7\36\30\3\2\2\2\36\33\3\2\2\2\37\"\3\2\2\2 \36\3\2\2\2 !"+
 		"\3\2\2\2!\5\3\2\2\2\" \3\2\2\2\6\t\26\36 ";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
