@@ -49,7 +49,7 @@ AND : '&&' | '/\\';
 OR : '||' | '\\/';
 
 // specify ID
-ID : ( [a-zA-Z0-9_]+ | '()' )+;
+ID :  [a-zA-Z0-9_]+ | ID'()' | ID'('ID')' | ID'.'ID | ID'-'ID;
 
 //NOT : '!' | 'not';
 //AND : '&&' | 'and' | '/\\';
