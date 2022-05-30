@@ -5,7 +5,7 @@ import expr.antlr.*;
 import expr.antlr.PCparserParser.*;
 import expr.composite.*;
 
-public class Antlr2Expr extends PCparserBaseVisitor<Expr>{
+public class Antlr2Expr extends PCparserBaseVisitor<Expr> {
 	
 	
 	/* *****************************************************************************************

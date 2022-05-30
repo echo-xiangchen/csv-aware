@@ -45,11 +45,11 @@ FALSE : 'false' | 'FALSE' | 'False';
 
 // logical expr keywords
 NOT : '!';
-AND : '&&' | '/\\';
-OR : '||' | '\\/';
+AND : '&&';
+OR : '||';
 
 // specify ID
-ID :  [a-zA-Z0-9_]+ | ID'()' | ID'('ID')' | ID'.'ID | ID'-'ID;
+ID : [a-zA-Z0-9_]+;
 
 //NOT : '!' | 'not';
 //AND : '&&' | 'and' | '/\\';

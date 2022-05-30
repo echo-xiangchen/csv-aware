@@ -45,7 +45,7 @@ public class FilterCSV_z3 {
 			
 			try {
 				//Get the CSVReader instance with specifying the delimiter to be used
-			    reader = new CSVReader(new FileReader(args[0]), ',', '"');
+			    reader = new CSVReader(new FileReader(args[0]));
 			    
 			    // initialize antlr2Expr and bddbuilder for parsing
 				final Antlr2Expr antlr2Expr = new Antlr2Expr();
@@ -62,10 +62,10 @@ public class FilterCSV_z3 {
 			    		
 			    		// get and split string
 			    		String currentRow = Arrays.toString(nextLine);
-			    		String[] splitPC = currentRow.split("\"pc\":");
+			    		String[] splitPC = currentRow.split("\"condition\":\"");
 			    		
 			    		// parse the first pc of current row if pcMap does not contain it
-			    		String firstPC = splitPC[1].split(",")[0];
+			    		String firstPC = splitPC[1].split("\"")[0];
 			    		
 			    		if (!pcMap.containsKey(firstPC)) {
 			    			ANTLRInputStream input = new ANTLRInputStream(firstPC);
@@ -93,9 +93,10 @@ public class FilterCSV_z3 {
 			    			//print splitPC[i].split(",")[0]
 			    			//System.out.println(i + ": " + splitPC[i].split(",")[0]);
 			    			
+			    			String currentPC = splitPC[i].split("\"")[0];
 			    			// parse the string if pcMap does not contain it
-			    			if (!pcMap.containsKey(splitPC[i].split(",")[0])) {
-			    				ANTLRInputStream input = new ANTLRInputStream(splitPC[i].split(",")[0]);
+			    			if (!pcMap.containsKey(currentPC)) {
+			    				ANTLRInputStream input = new ANTLRInputStream(currentPC);
 			    				PCparserLexer lexer = new PCparserLexer(input);
 			    				CommonTokenStream tokens = new CommonTokenStream(lexer);
 			    				PCparserParser parser = new PCparserParser(tokens);
@@ -109,10 +110,10 @@ public class FilterCSV_z3 {
 			    		        expr.accept(z3Builder);
 			    		        
 			    		        // store the BDD into the map
-			    		        pcMap.put(splitPC[i].split(",")[0], z3Builder.getBoolExpr());
+			    		        pcMap.put(currentPC, z3Builder.getBoolExpr());
 							}
 			    			
-			    			PCpath = z3Builder.ctx.mkAnd(PCpath, pcMap.get(splitPC[i].split(",")[0]));
+			    			PCpath = z3Builder.ctx.mkAnd(PCpath, pcMap.get(currentPC));
 			    			
 			    			Solver s = z3Builder.ctx.mkSolver();
 			    			s.add(PCpath);

@@ -60,4 +60,46 @@ public class PrettyPrinter implements Visitor {
 		infixOutput = infixOutput.concat(boolVar.name);
 	}
 
+	@Override
+	public void visitEqual(Equal equal) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visitGreaterThan(GreaterThan greaterThan) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visitLessThan(LessThan lessThan) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visitGreaterEqual(GreaterEqual greaterEqual) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visitLessEqual(LessEqual lessEqual) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visitShiftLeft(ShiftLeft shiftLeft) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visitFunction(Function function) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
