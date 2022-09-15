@@ -59,6 +59,10 @@ public class FilterCSV_BDD {
 			    		
 			    		// parse the first pc of current row if pcMap does not contain it
 			    		String firstPC = splitPC[1].split("\"")[0];
+			    		
+			    		if (firstPC.isEmpty()) {
+			    			firstPC = "True";
+						}
 			    		//System.out.println(firstPC);
 			    		
 			    		if (!pcMap.containsKey(firstPC)) {
@@ -88,6 +92,9 @@ public class FilterCSV_BDD {
 			    			//System.out.println(i + ": " + splitPC[i].split(",")[0]);
 			    			
 			    			String currentPC = splitPC[i].split("\"")[0];
+			    			if (currentPC.isEmpty()) {
+								currentPC = "True";
+							}
 			    			// parse the string if pcMap does not contain it
 			    			if (!pcMap.containsKey(currentPC)) {
 			    				ANTLRInputStream input = new ANTLRInputStream(currentPC);
@@ -116,7 +123,7 @@ public class FilterCSV_BDD {
 			    		}
 			    		
 			    		if (writeToFile) {
-							System.out.println(currentRow);
+							System.out.println(currentRow.substring(1,currentRow.length()));
 						}
 			    	}
 			   }
