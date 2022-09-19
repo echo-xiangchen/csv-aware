@@ -25,7 +25,7 @@ public class ExIgnoredMacros {
 			
 			try {
 				reader = new BufferedReader(new FileReader(args[0]));
-				writer = new BufferedWriter(new FileWriter("tmpMacro.h"));
+				writer = new BufferedWriter(new FileWriter("listOfExtra.h"));
 				
 				String line;
 				
@@ -49,8 +49,12 @@ public class ExIgnoredMacros {
 				}
 		        
 				String output = "";
+				String TT = "TT";
+				String defined = "defined";
 				for (String macro : undefMap.keySet()) {
-					output = output + "#undef " +macro + "\n";
+					if (!macro.startsWith("FOR") && !macro.equals(TT) && !macro.equals(defined)) {
+						output = output + "#undef " +macro + "\n";
+					}
 				}
 				//System.out.println(output);
 				writer.write(output);
