@@ -53,11 +53,13 @@ public class ExSugarCfeaVar {
 				String line;
 				
 				while ((line = reader.readLine()) != null) {
-					String[] splitLine = line.split(":");
+					// use trim to remove leading empty space and end space
+					String[] splitLine = line.trim().split(":");
 					String[] splitVarlist = splitLine[1].split(" ");
 					
 					for (int i = 1; i < splitVarlist.length; i++) {
-						if (!varMap.containsKey(splitVarlist[i]) && !(Character.compare(splitVarlist[i].charAt(0), '_') == 0)) {
+						if (!varMap.containsKey(splitVarlist[i])) {
+								//&& !(Character.compare(splitVarlist[i].charAt(0), '_') == 0)) {
 							varMap.put(splitVarlist[i], null);
 						}
 					}
