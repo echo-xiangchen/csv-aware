@@ -58,9 +58,9 @@ public class ExSugarCfeaVar {
 					String[] splitVarlist = splitLine[1].split(" ");
 					
 					for (int i = 1; i < splitVarlist.length; i++) {
-						if (!varMap.containsKey(splitVarlist[i])) {
+						if (!varMap.containsKey(splitVarlist[i].trim()) && !(Character.compare(splitVarlist[i].charAt(0), '_') == 0)) {
 								//&& !(Character.compare(splitVarlist[i].charAt(0), '_') == 0)) {
-							varMap.put(splitVarlist[i], null);
+							varMap.put(splitVarlist[i].trim(), null);
 						}
 					}
 				}
