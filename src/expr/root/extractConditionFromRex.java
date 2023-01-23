@@ -17,7 +17,7 @@ import com.opencsv.CSVReader;
 
 import expr.antlr.PCparserLexer;
 import expr.antlr.PCparserParser;
-import expr.Antlr2Expr;
+import expr.Antlr2BDD;
 import expr.composite.Expr;
 import expr.visitor.BDDbuilder;
 

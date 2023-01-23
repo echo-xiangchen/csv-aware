@@ -2,22 +2,20 @@ package expr.root;
 
 import static info.scce.addlib.cudd.Cudd.*;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.IOException;
+import java.io.FileWriter;
 import java.util.*;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.Pair;
 import org.antlr.v4.runtime.tree.ParseTree;
-
-import com.opencsv.CSVReader;
 
 import expr.antlr.PCparserLexer;
 import expr.antlr.PCparserParser;
-import expr.Antlr2Expr;
-import expr.composite.Expr;
-import expr.visitor.BDDbuilder;
+import expr.Antlr2BDD;
 
 public class FilterCSV_BDD {
 
@@ -32,41 +30,73 @@ public class FilterCSV_BDD {
 					+ "Warning: You do not include any .csv files.");
 		}
 		else {
-			CSVReader reader = null;
+			BufferedReader reader;
+			BufferedWriter writer;
 			
 			try {
 				//Get the CSVReader instance with specifying the delimiter to be used
-			    reader = new CSVReader(new FileReader(args[0]));
+				reader = new BufferedReader(new FileReader(args[0]));
 			    
 			    // initialize antlr2Expr and bddbuilder for parsing
-				final Antlr2Expr antlr2Expr = new Antlr2Expr();
-				final BDDbuilder bddBuilder = new BDDbuilder();
+				final Antlr2BDD antlr2Expr = new Antlr2BDD();
 				
 				// create a false BDD for checking satisfiability
-				long FF = Cudd_ReadLogicZero(bddBuilder.ddManager);;
+				long FF = Cudd_ReadLogicZero(antlr2Expr.ddManager);;
 			      
-			    //Read CSV line by line and use the string array as you want
-			    String[] nextLine;			    
+				// skip the first line - it's the title of Neo4j's result
+				String line = reader.readLine();	
+				
+				// string that waiting to be written to the output file
+				String output = "";
 
-			    while ((nextLine = reader.readNext()) != null) {
-			    	if (nextLine != null) {
-			    		// indicator for adding to the final result
-			    		boolean writeToFile = true;
-			    		
-			    		// get and split string
-			    		String currentRow = Arrays.toString(nextLine);
-			    		String[] splitPC = currentRow.split("\"condition\":\"");
-			    		
-			    		// parse the first pc of current row if pcMap does not contain it
-			    		String firstPC = splitPC[1].split("\"")[0];
-			    		
-			    		if (firstPC.isEmpty()) {
-			    			firstPC = "True";
+			    while ((line = reader.readLine()) != null) {
+		    		// indicator for adding to the final result
+		    		boolean writeToFile = true;
+		    		
+		    		// get and split string
+		    		String[] splitPC = line.split("condition\"\":\"\"");
+		    		
+		    		// parse the first pc of current row if pcMap does not contain it
+		    		String firstPC = splitPC[1].split("\"\"")[0];
+		    		
+		    		if (firstPC.isEmpty()) {
+		    			firstPC = "True";
+					}
+		    		//System.out.println(firstPC);
+		    		
+		    		if (!pcMap.containsKey(firstPC)) {
+		    			CharStream input = CharStreams.fromString(firstPC);
+	    				PCparserLexer lexer = new PCparserLexer(input);
+	    				CommonTokenStream tokens = new CommonTokenStream(lexer);
+	    				PCparserParser parser = new PCparserParser(tokens);
+	    		        parser.setBuildParseTree(true);      // tell ANTLR to build a parse tree
+	    		        ParseTree tree = parser.stat(); // parse
+	    		        
+	    		        // generate the bdd address for initial string
+	    		        Long bddaddress = antlr2Expr.visit(tree.getChild(0));
+	    		        
+	    		        // generate the BDD
+	    		        //expr.accept(bddBuilder);
+	    		        
+	    		        // store the BDD into the map
+	    		        pcMap.put(firstPC, bddaddress);
+					}
+		    		
+		    		Long PCpath = pcMap.get(firstPC);
+		    		
+		    		
+		    		// perform SAT check for current row (path)
+		    		for (int i = 2; i < splitPC.length; i++) {
+		    			//print splitPC[i].split(",")[0]
+		    			//System.out.println(i + ": " + splitPC[i].split(",")[0]);
+		    			
+		    			String currentPC = splitPC[i].split("\"\"")[0];
+		    			if (currentPC.isEmpty()) {
+							currentPC = "True";
 						}
-			    		//System.out.println(firstPC);
-			    		
-			    		if (!pcMap.containsKey(firstPC)) {
-			    			ANTLRInputStream input = new ANTLRInputStream(firstPC);
+		    			// parse the string if pcMap does not contain it
+		    			if (!pcMap.containsKey(currentPC)) {
+		    				CharStream input = CharStreams.fromString(currentPC);
 		    				PCparserLexer lexer = new PCparserLexer(input);
 		    				CommonTokenStream tokens = new CommonTokenStream(lexer);
 		    				PCparserParser parser = new PCparserParser(tokens);
@@ -74,59 +104,43 @@ public class FilterCSV_BDD {
 		    		        ParseTree tree = parser.stat(); // parse
 		    		        
 		    		        // generate the Expr hierarchy for initial string
-		    		        Expr expr = antlr2Expr.visit(tree.getChild(0));
+		    		        Long bddaddress = antlr2Expr.visit(tree.getChild(0));
 		    		        
 		    		        // generate the BDD
-		    		        expr.accept(bddBuilder);
+		    		        //expr.accept(bddBuilder);
 		    		        
 		    		        // store the BDD into the map
-		    		        pcMap.put(firstPC, bddBuilder.getBDDaddress());
+		    		        pcMap.put(currentPC, bddaddress);
 						}
-			    		
-			    		Long PCpath = pcMap.get(firstPC);
-			    		
-			    		
-			    		// perform SAT check for current row (path)
-			    		for (int i = 2; i < splitPC.length; i++) {
-			    			//print splitPC[i].split(",")[0]
-			    			//System.out.println(i + ": " + splitPC[i].split(",")[0]);
-			    			
-			    			String currentPC = splitPC[i].split("\"")[0];
-			    			if (currentPC.isEmpty()) {
-								currentPC = "True";
-							}
-			    			// parse the string if pcMap does not contain it
-			    			if (!pcMap.containsKey(currentPC)) {
-			    				ANTLRInputStream input = new ANTLRInputStream(currentPC);
-			    				PCparserLexer lexer = new PCparserLexer(input);
-			    				CommonTokenStream tokens = new CommonTokenStream(lexer);
-			    				PCparserParser parser = new PCparserParser(tokens);
-			    		        parser.setBuildParseTree(true);      // tell ANTLR to build a parse tree
-			    		        ParseTree tree = parser.stat(); // parse
-			    		        
-			    		        // generate the Expr hierarchy for initial string
-			    		        Expr expr = antlr2Expr.visit(tree.getChild(0));
-			    		        
-			    		        // generate the BDD
-			    		        expr.accept(bddBuilder);
-			    		        
-			    		        // store the BDD into the map
-			    		        pcMap.put(currentPC, bddBuilder.getBDDaddress());
-							}
-			    			
-			    			PCpath = Cudd_bddAnd(BDDbuilder.ddManager, PCpath, pcMap.get(currentPC));
-			    			
-			    			if (PCpath == FF) {
-								writeToFile = false;
-								break;
-							}
-			    		}
-			    		
-			    		if (writeToFile) {
-							System.out.println(currentRow.substring(1,currentRow.length()));
+		    			
+		    			PCpath = Cudd_bddAnd(antlr2Expr.ddManager, PCpath, pcMap.get(currentPC));
+		    			Cudd_Ref(PCpath);
+		    			
+		    			if (PCpath == FF) {
+							writeToFile = false;
+							break;
 						}
-			    	}
+		    		}
+		    		
+		    		if (writeToFile) {
+						output = output + line + "\n";
+					}
+			    	
 			   }
+			    
+			    
+			    // capture input file name, and use it in output file
+				String[] splitInputFileName = args[0].toString().split("/");
+				String filename = splitInputFileName[splitInputFileName.length - 1].split("\\.")[0];
+				
+				System.out.println("writing " + filename + ".awareBDD.csv");
+				
+				writer = new BufferedWriter(new FileWriter(filename + ".awareBDD.csv"));
+				
+				// write to file
+				writer.write(output);
+				writer.close();
+				System.out.println("writing " + filename + ".awareBDD.csv finished.");
 			    
 //			    for (Map.Entry<String, Pair<Expr, Long>> entry : pcMap.entrySet()) {
 //	    			Pair<Expr, Long> exprBDD = entry.getValue();
@@ -137,12 +151,6 @@ public class FilterCSV_BDD {
 //	    		 }
 			} catch (Exception e) {
 				e.printStackTrace();
-				} finally {
-					try {
-						reader.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-							}
 				}
 		}
 	}
