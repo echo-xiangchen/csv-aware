@@ -49,6 +49,7 @@ public class FilterCSV_BDD {
 				// string that waiting to be written to the output file
 				String output = "";
 
+				int linenum = 2;
 			    while ((line = reader.readLine()) != null) {
 		    		// indicator for adding to the final result
 		    		boolean writeToFile = true;
@@ -125,7 +126,8 @@ public class FilterCSV_BDD {
 		    		if (writeToFile) {
 						output = output + line + "\n";
 					}
-			    	
+		    		System.out.println("finished line " + linenum);
+			    	linenum++;
 			   }
 			    
 			    

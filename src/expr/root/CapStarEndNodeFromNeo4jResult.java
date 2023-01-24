@@ -22,7 +22,15 @@ public class CapStarEndNodeFromNeo4jResult {
 				// skip the first line - it's the title of Neo4j's result
 				String line = reader.readLine();
 				
+				int linenum = 2;
 				while ((line = reader.readLine()) != null) {
+					// some lines might be empty
+					if (line.equals("\"\"")) {
+						// dont use break here! it will quit the while loop!
+						// use continue.
+						//break;
+						continue;
+					}
 					String[] splitId = line.trim().split("id\"\":\"\"");
 					String startID = splitId[1].split("\"\"")[0];
 					String endID = splitId[splitId.length - 1].split("\"\"")[0];
@@ -35,6 +43,8 @@ public class CapStarEndNodeFromNeo4jResult {
 					} else if (!pathMap.get(startID).contains(endID)) {
 						pathMap.get(startID).add(endID);
 					}
+					System.out.println("finished line " + linenum);
+					linenum++;
 				}
 				
 				String output = "";
