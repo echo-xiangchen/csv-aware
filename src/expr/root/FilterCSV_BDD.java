@@ -51,6 +51,13 @@ public class FilterCSV_BDD {
 
 				int linenum = 2;
 			    while ((line = reader.readLine()) != null) {
+			    	// some lines might be empty
+					if (line.equals("\"\"")) {
+						// dont use break here! it will quit the while loop!
+						// use continue.
+						//break;
+						continue;
+					}
 		    		// indicator for adding to the final result
 		    		boolean writeToFile = true;
 		    		
