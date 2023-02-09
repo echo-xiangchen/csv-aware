@@ -19,6 +19,8 @@ public class CompareNeo4jSouffle {
 			Map<String, HashSet<String>> inNeo4jNotSouffleMap = new LinkedHashMap<>();
 			Map<String, HashSet<String>> inSouffleNotNeo4jMap = new LinkedHashMap<>();
 			
+			
+			
 			try {
 				// args[0] is neo4j output
 				reader = new BufferedReader(new FileReader(args[0]));
@@ -76,35 +78,48 @@ public class CompareNeo4jSouffle {
 					System.out.println("finished capturing line " + linenum + " of souffle result.");
 					linenum++;
 				}
-				
-				// output the start and end ID of neo4j result
-				String output = "";
+
 				
 				// capture input file name, and use it in output file
 				String[] splitInputFileName = args[0].toString().split("/");
 				String filename = splitInputFileName[splitInputFileName.length - 1].split("\\.")[0];
 				
-				writer = new BufferedWriter(new FileWriter(filename + ".startEndID.csv"));
-				
-				System.out.println("writing " + filename + ".startEndID.csv");
-				for (Map.Entry<String, HashSet<String>> entry : neo4jMap.entrySet()) {
-					String key = entry.getKey();
-					for (String value : neo4jMap.get(key)) {
-						output = output + key + "\t" + value + "\n";
-			        }
-					
-				}
-				
-				// write to file
-				writer.write(output);
-				writer.close();
-				System.out.println("writing " + filename + ".startEndID.csv finished.");
-				
-				
 				if (neo4jMap.keySet().equals(souffleMap.keySet())) {
 					System.out.println("keys are equal");
 				} else {
 					System.out.println("keys are not equal");
+					HashSet<String> inNeo4jkey = new HashSet<>(neo4jMap.keySet());
+					HashSet<String> inSoufflekey = new HashSet<>(souffleMap.keySet());
+					
+					// calculate keyset intersection
+					HashSet<String> intersection = new HashSet<>(neo4jMap.keySet());
+					intersection.retainAll(souffleMap.keySet());
+					
+					// key in neo4j not in souffle
+					inNeo4jkey.removeAll(intersection);
+					
+					// key in souffle not in neo4j
+					inSoufflekey.removeAll(intersection);
+					
+					if (!inNeo4jkey.isEmpty()) {
+						System.out.println("===============================");
+						System.out.println("Keys in Neo4j not in Souffle:");
+						System.out.println("===============================");
+						for( String curKey : inNeo4jkey ){
+				            System.out.println( curKey );
+				        }
+						System.out.println("===============================");
+					}
+					
+					if (!inSoufflekey.isEmpty()) {
+						System.out.println("===============================");
+						System.out.println("Keys in Souffle not in Neo4j:");
+						System.out.println("===============================");
+						for( String curKey : inSoufflekey ){
+				            System.out.println( curKey );
+				        }
+						System.out.println("===============================");
+					}
 				}
 				
 				for (Map.Entry<String, HashSet<String>> entry : neo4jMap.entrySet()) {
@@ -138,6 +153,12 @@ public class CompareNeo4jSouffle {
 					}
 				}
 				
+				// if both inNeo4jNotSouffleMap and inSouffleNotNeo4jMap are empty
+				// then results are identical
+				if (inNeo4jNotSouffleMap.isEmpty() && inSouffleNotNeo4jMap.isEmpty()) {
+					System.out.println("Results of Neo4j and Souffle are identical.");
+				}
+				
 				// if there are any key-value pair return by neo4j but not souffle
 				if (!inNeo4jNotSouffleMap.isEmpty()) {
 					String writeInNeo4jNotSouffle = "";
@@ -148,13 +169,15 @@ public class CompareNeo4jSouffle {
 					for (Map.Entry<String, HashSet<String>> entry : inNeo4jNotSouffleMap.entrySet()) {
 						String key = entry.getKey();
 						for (String value : inNeo4jNotSouffleMap.get(key)) {
-							writeInNeo4jNotSouffle = writeInNeo4jNotSouffle + key + "\t" + value + "\n";
+							writeInNeo4jNotSouffle = key + "\t" + value + "\n";
+							// write to file
+							writer.write(writeInNeo4jNotSouffle);
 				        }
 						
 					}
 					
-					// write to file
-					writer.write(writeInNeo4jNotSouffle);
+//					// write to file
+//					writer.write(writeInNeo4jNotSouffle);
 					writer.close();
 					System.out.println("writing " + filename + ".inNeo4jNotSouffle.csv finished.");
 				} 
@@ -169,22 +192,39 @@ public class CompareNeo4jSouffle {
 					for (Map.Entry<String, HashSet<String>> entry : inSouffleNotNeo4jMap.entrySet()) {
 						String key = entry.getKey();
 						for (String value : inSouffleNotNeo4jMap.get(key)) {
-							writeInSouffleNotNeo4j = writeInSouffleNotNeo4j + key + "\t" + value + "\n";
+							writeInSouffleNotNeo4j = key + "\t" + value + "\n";
+							// write to file
+							writer.write(writeInSouffleNotNeo4j);
 				        }
 						
 					}
 					
-					// write to file
-					writer.write(writeInSouffleNotNeo4j);
+//					// write to file
+//					writer.write(writeInSouffleNotNeo4j);
 					writer.close();
 					System.out.println("writing " + filename + ".inSouffleNotNeo4j.csv finished.");
 				}
 				
-				// if both inNeo4jNotSouffleMap and inSouffleNotNeo4jMap are empty
-				// then results are identical
-				if (inNeo4jNotSouffleMap.isEmpty() && inSouffleNotNeo4jMap.isEmpty()) {
-					System.out.println("Results of Neo4j and Souffle are identical.");
+				writer = new BufferedWriter(new FileWriter(filename + ".startEndID.csv"));
+				
+				// output the start and end ID of neo4j result
+				String output = "";
+				System.out.println("writing " + filename + ".startEndID.csv");
+				for (Map.Entry<String, HashSet<String>> entry : neo4jMap.entrySet()) {
+					String key = entry.getKey();
+					for (String value : neo4jMap.get(key)) {
+						output = key + "\t" + value + "\n";
+						// write to file
+						writer.write(output);
+			        }
+					
 				}
+				
+//				// write to file
+//				writer.write(output);
+				writer.close();
+				System.out.println("writing " + filename + ".startEndID.csv finished.");
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

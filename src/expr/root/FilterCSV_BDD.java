@@ -51,84 +51,86 @@ public class FilterCSV_BDD {
 
 				int linenum = 2;
 			    while ((line = reader.readLine()) != null) {
+			    	// indicator for adding to the final result
+		    		boolean writeToFile = true;
 			    	// some lines might be empty
 					if (line.equals("\"\"")) {
 						// dont use break here! it will quit the while loop!
 						// use continue.
 						//break;
-						continue;
-					}
-		    		// indicator for adding to the final result
-		    		boolean writeToFile = true;
-		    		
-		    		// get and split string
-		    		String[] splitPC = line.split("condition\"\":\"\"");
-		    		
-		    		// parse the first pc of current row if pcMap does not contain it
-		    		String firstPC = splitPC[1].split("\"\"")[0];
-		    		
-		    		if (firstPC.isEmpty()) {
-		    			firstPC = "True";
-					}
-		    		//System.out.println(firstPC);
-		    		
-		    		if (!pcMap.containsKey(firstPC)) {
-		    			CharStream input = CharStreams.fromString(firstPC);
-	    				PCparserLexer lexer = new PCparserLexer(input);
-	    				CommonTokenStream tokens = new CommonTokenStream(lexer);
-	    				PCparserParser parser = new PCparserParser(tokens);
-	    		        parser.setBuildParseTree(true);      // tell ANTLR to build a parse tree
-	    		        ParseTree tree = parser.stat(); // parse
-	    		        
-	    		        // generate the bdd address for initial string
-	    		        Long bddaddress = antlr2Expr.visit(tree.getChild(0));
-	    		        
-	    		        // generate the BDD
-	    		        //expr.accept(bddBuilder);
-	    		        
-	    		        // store the BDD into the map
-	    		        pcMap.put(firstPC, bddaddress);
-					}
-		    		
-		    		Long PCpath = pcMap.get(firstPC);
-		    		
-		    		
-		    		// perform SAT check for current row (path)
-		    		for (int i = 2; i < splitPC.length; i++) {
-		    			//print splitPC[i].split(",")[0]
-		    			//System.out.println(i + ": " + splitPC[i].split(",")[0]);
-		    			
-		    			String currentPC = splitPC[i].split("\"\"")[0];
-		    			if (currentPC.isEmpty()) {
-							currentPC = "True";
+						writeToFile = true;
+					} else {
+						
+			    		// get and split string
+			    		String[] splitPC = line.split("condition\"\":\"\"");
+			    		
+			    		// parse the first pc of current row if pcMap does not contain it
+			    		String firstPC = splitPC[1].split("\"\"")[0];
+			    		
+			    		if (firstPC.isEmpty()) {
+			    			firstPC = "True";
 						}
-		    			// parse the string if pcMap does not contain it
-		    			if (!pcMap.containsKey(currentPC)) {
-		    				CharStream input = CharStreams.fromString(currentPC);
+			    		//System.out.println(firstPC);
+			    		
+			    		if (!pcMap.containsKey(firstPC)) {
+			    			CharStream input = CharStreams.fromString(firstPC);
 		    				PCparserLexer lexer = new PCparserLexer(input);
 		    				CommonTokenStream tokens = new CommonTokenStream(lexer);
 		    				PCparserParser parser = new PCparserParser(tokens);
 		    		        parser.setBuildParseTree(true);      // tell ANTLR to build a parse tree
 		    		        ParseTree tree = parser.stat(); // parse
 		    		        
-		    		        // generate the Expr hierarchy for initial string
+		    		        // generate the bdd address for initial string
 		    		        Long bddaddress = antlr2Expr.visit(tree.getChild(0));
 		    		        
 		    		        // generate the BDD
 		    		        //expr.accept(bddBuilder);
 		    		        
 		    		        // store the BDD into the map
-		    		        pcMap.put(currentPC, bddaddress);
+		    		        pcMap.put(firstPC, bddaddress);
 						}
-		    			
-		    			PCpath = Cudd_bddAnd(antlr2Expr.ddManager, PCpath, pcMap.get(currentPC));
-		    			Cudd_Ref(PCpath);
-		    			
-		    			if (PCpath == FF) {
-							writeToFile = false;
-							break;
-						}
-		    		}
+			    		
+			    		Long PCpath = pcMap.get(firstPC);
+			    		
+			    		
+			    		// perform SAT check for current row (path)
+			    		for (int i = 2; i < splitPC.length; i++) {
+			    			//print splitPC[i].split(",")[0]
+			    			//System.out.println(i + ": " + splitPC[i].split(",")[0]);
+			    			
+			    			String currentPC = splitPC[i].split("\"\"")[0];
+			    			if (currentPC.isEmpty()) {
+								currentPC = "True";
+							}
+			    			// parse the string if pcMap does not contain it
+			    			if (!pcMap.containsKey(currentPC)) {
+			    				CharStream input = CharStreams.fromString(currentPC);
+			    				PCparserLexer lexer = new PCparserLexer(input);
+			    				CommonTokenStream tokens = new CommonTokenStream(lexer);
+			    				PCparserParser parser = new PCparserParser(tokens);
+			    		        parser.setBuildParseTree(true);      // tell ANTLR to build a parse tree
+			    		        ParseTree tree = parser.stat(); // parse
+			    		        
+			    		        // generate the Expr hierarchy for initial string
+			    		        Long bddaddress = antlr2Expr.visit(tree.getChild(0));
+			    		        
+			    		        // generate the BDD
+			    		        //expr.accept(bddBuilder);
+			    		        
+			    		        // store the BDD into the map
+			    		        pcMap.put(currentPC, bddaddress);
+							}
+			    			
+			    			PCpath = Cudd_bddAnd(antlr2Expr.ddManager, PCpath, pcMap.get(currentPC));
+			    			Cudd_Ref(PCpath);
+			    			
+			    			if (PCpath == FF) {
+								writeToFile = false;
+								break;
+							}
+			    		}
+					}
+		    		
 		    		
 		    		if (writeToFile) {
 						output = output + line + "\n";
