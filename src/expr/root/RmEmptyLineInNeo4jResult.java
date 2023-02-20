@@ -20,13 +20,16 @@ public class RmEmptyLineInNeo4jResult {
 				// args[0] is neo4j output
 				reader = new BufferedReader(new FileReader(args[0]));
 				
+				// capture input file name, and use it in output file
+				String[] splitInputFileName = args[0].toString().split("/");
+				String filename = splitInputFileName[splitInputFileName.length - 1].split("\\.")[0];
+				
+				writer = new BufferedWriter(new FileWriter(filename + ".removeEmptyLine.csv"));
+				
 				// skip the first line - it's the title of Neo4j's result
 				String line = reader.readLine();
 				
 				int linenum = 2;
-				
-				// if line is not empty, add to output
-				String output = "";
 				
 				while ((line = reader.readLine()) != null) {
 					// some lines might be empty
@@ -36,21 +39,12 @@ public class RmEmptyLineInNeo4jResult {
 						//break;
 						continue;
 					}
-					output = output + line + "\n";
+					writer.write(line + "\n");
 					System.out.println("finished capturing line " + linenum + " of neo4j result.");
 					linenum++;
 				}
 				
-				// capture input file name, and use it in output file
-				String[] splitInputFileName = args[0].toString().split("/");
-				String filename = splitInputFileName[splitInputFileName.length - 1].split("\\.")[0];
-				
-				writer = new BufferedWriter(new FileWriter(filename + ".removeEmptyLine.csv"));
-				
-				System.out.println("writing " + filename + ".removeEmptyLine.csv");
-				
 				// write to file
-				writer.write(output);
 				writer.close();
 				System.out.println("writing " + filename + ".removeEmptyLine.csv finished.");
 				

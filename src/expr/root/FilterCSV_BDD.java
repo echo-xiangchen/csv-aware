@@ -36,7 +36,13 @@ public class FilterCSV_BDD {
 			try {
 				//Get the CSVReader instance with specifying the delimiter to be used
 				reader = new BufferedReader(new FileReader(args[0]));
+				
+				// capture input file name, and use it in output file
+				String[] splitInputFileName = args[0].toString().split("/");
+				String filename = splitInputFileName[splitInputFileName.length - 1].split("\\.")[0];
 			    
+				writer = new BufferedWriter(new FileWriter(filename + ".awareBDD.csv"));
+				
 			    // initialize antlr2Expr and bddbuilder for parsing
 				final Antlr2BDD antlr2Expr = new Antlr2BDD();
 				
@@ -46,9 +52,6 @@ public class FilterCSV_BDD {
 				// skip the first line - it's the title of Neo4j's result
 				String line = reader.readLine();	
 				
-				// string that waiting to be written to the output file
-				String output = "";
-
 				int linenum = 2;
 			    while ((line = reader.readLine()) != null) {
 			    	// indicator for adding to the final result
@@ -133,23 +136,12 @@ public class FilterCSV_BDD {
 		    		
 		    		
 		    		if (writeToFile) {
-						output = output + line + "\n";
+						writer.write(line + "\n");
 					}
 		    		System.out.println("finished line " + linenum);
 			    	linenum++;
 			   }
-			    
-			    
-			    // capture input file name, and use it in output file
-				String[] splitInputFileName = args[0].toString().split("/");
-				String filename = splitInputFileName[splitInputFileName.length - 1].split("\\.")[0];
 				
-				System.out.println("writing " + filename + ".awareBDD.csv");
-				
-				writer = new BufferedWriter(new FileWriter(filename + ".awareBDD.csv"));
-				
-				// write to file
-				writer.write(output);
 				writer.close();
 				System.out.println("writing " + filename + ".awareBDD.csv finished.");
 			    
