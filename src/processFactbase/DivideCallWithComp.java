@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.HashSet;
 
-public class DivideFactbaseWithComp {
+public class DivideCallWithComp {
 	public static void main(String[] args) {
 		if (args.length < 3 ) {
 			System.out.println("Usage: "
@@ -55,7 +55,7 @@ public class DivideFactbaseWithComp {
 		            
 		            // create writer for node.comp.csv
 		            //writer = new BufferedWriter(new FileWriter(nodefilename + "." + curcomp.replaceAll("/", ".") + "csv"));
-		            writer = new BufferedWriter(new FileWriter("compVPwriteFact/" + nodefilename + "." + curcomp.replaceAll("/", ".") + ".csv"));
+		            writer = new BufferedWriter(new FileWriter(nodefilename + "." + curcomp.replaceAll("/", ".") + ".csv"));
 		            System.out.println("Start writing " + nodefilename + "." + curcomp.replaceAll("/", ".") + ".csv");
 		            // read node.csv: args[1]
 		            reader = new BufferedReader(new FileReader(args[1]));
@@ -89,7 +89,7 @@ public class DivideFactbaseWithComp {
 		            String edgeLine;
 		            // create writer for node.comp.csv
 		            //writer = new BufferedWriter(new FileWriter(edgefilename + "." + curcomp.replaceAll("/", ".") + "csv"));
-		            writer = new BufferedWriter(new FileWriter("compVPwriteFact/" + edgefilename + "." + curcomp.replaceAll("/", ".") + ".csv"));
+		            writer = new BufferedWriter(new FileWriter(edgefilename + "." + curcomp.replaceAll("/", ".") + ".csv"));
 		            System.out.println("Start writing " + edgefilename + "." + curcomp.replaceAll("/", ".") + ".csv");
 		            
 		            // read edge.csv: args[2]
@@ -110,7 +110,7 @@ public class DivideFactbaseWithComp {
 		            	// and the edge type is varWrite or parWrite
 		            	// save it to the file
 		            	if ((nodeSet.contains(startID) && nodeSet.contains(endID))
-		            			&& (edgeType.equals("varWrite") || edgeType.equals("parWrite"))) {
+		            			&& edgeType.equals("call")) {
 							writer.write(edgeLine + "\n");
 						}
 		            }
