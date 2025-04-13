@@ -76,7 +76,7 @@ public class GenCrossCompFlow {
 					// remove the last ","
 					compFlow = compFlow.substring(0, compFlow.length() - 2);
 					
-					// generate VPwrite fact for current line
+					// generate crossCompFlow fact for current line
 					String crossCompFlow = startID + "\t" + endID + "\t" 
 									+ "crossCompFlow" + "\t" + condition + "\t" + compFlow + "\n";
 					

@@ -55,7 +55,7 @@ public class GenCrossComp {
 					// remove the first "&&" in condition
 					condition = condition.substring(2);
 					
-					// generate VPwrite fact for current line
+					// generate crossComp fact for current line
 					String crossComp = startID + "\t" + endID + "\t" 
 									+ "crossComp" + "\t" + condition + "\n";
 					
